@@ -9,5 +9,5 @@ cd JEPA-WorldEmergence
 sudo apt update && sudo apt install tmux vim htop
 curl -LsSf https://astral.sh/uv/install.sh | sh
 tmux new -s session
-
+uv sync
 ```
