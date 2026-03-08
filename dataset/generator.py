@@ -72,13 +72,13 @@ class DatasetGenerator:
             deduplicated_batch = self.deduplicate_batch(batch)
 
             for game in deduplicated_batch:
-                if self.current_test_index >= self.test_size:
+                if self.current_train_index >= self.train_size:
                     break
                 game_tensor = self.convert_game_to_tensor(game)
                 self.train_dataset[self.current_train_index] = game_tensor.view(-1)
                 self.current_train_index += 1
                 if self.current_train_index % 100_000 == 0:
-                    logging.info(f"Current index {self.current_train_index}")
+                    logging.info(f"Current train index {self.current_train_index}")
 
     def __generate_test_dataset(self):
         while self.current_test_index < self.test_size:
@@ -92,7 +92,7 @@ class DatasetGenerator:
                 self.test_dataset[self.current_test_index] = game_tensor.view(-1)
                 self.current_test_index += 1
                 if self.current_test_index % 100_000 == 0:
-                    logging.info(f"Current index {self.current_test_index}")
+                    logging.info(f"Current test index {self.current_test_index}")
 
     def generate_batch_of_games(self):
         logging.info(f"Generating batch of {self.BATCH_SIZE} games...")
