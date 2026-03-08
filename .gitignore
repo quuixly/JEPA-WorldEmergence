@@ -207,3 +207,8 @@ marimo/_lsp/
 __marimo__/
 
 .idea/
+
+# Dataset
+dataset/checkpoint_data*
+dataset/test_dataset*
+dataset/train_dataset*
