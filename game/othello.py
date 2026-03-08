@@ -1,5 +1,7 @@
 from enum import Enum
 import random
+import hashlib
+import pickle
 import numpy as np
 
 
@@ -265,6 +267,10 @@ class GameBoard:
             rows.append(row_str)
 
         return '\n'.join([col_headers] + rows)
+
+    def get_hash(self):
+        board_bytes = pickle.dumps(self.get_board())
+        return hashlib.sha256(board_bytes).digest()
 
     def display(self, highlight_positions=None):
         """
