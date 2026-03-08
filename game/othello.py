@@ -1,5 +1,5 @@
 from enum import Enum
-
+import random
 import numpy as np
 
 
@@ -293,6 +293,32 @@ class GameBoard:
             lines[i] = row_num_str + new_row.rstrip()
 
         print('\n'.join(lines))
+
+    def simulate_game(self):
+        """
+        Simulates an Othello game from the current board state until the game ends.
+        Moves are chosen randomly from the available legal moves.
+        """
+
+        player_turn = None
+        if self.game_history:
+            player_turn = Piece.BLACK if self.game_history[-1][0] == Piece.WHITE else Piece.WHITE
+        else:
+            player_turn = Piece.BLACK
+
+        while True:
+            legal_moves = self.get_legal_moves(player_turn)
+
+            if not legal_moves:
+                opponent = Piece.BLACK if player_turn == Piece.WHITE else Piece.WHITE
+                if not self.get_legal_moves(opponent):
+                    break
+                player_turn = opponent
+                continue
+
+            move = random.choice(legal_moves)
+            self.add_piece(player_turn, move)
+            player_turn = Piece.BLACK if player_turn == Piece.WHITE else Piece.WHITE
 
 
 class Othello:
