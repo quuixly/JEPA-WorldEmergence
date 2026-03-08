@@ -1,5 +1,3 @@
-from game.othello import GameBoard
-
 # Creating Custom Board States
 
 You can construct board states in two different ways depending on your needs.
@@ -224,5 +222,12 @@ board.display(positions_to_highlight)
 
 ```python
 board = GameBoard()
+board.simulate_game()
+```
+
+Simulate the game from the current history
+
+```python
+board = GameBoard(history)
 board.simulate_game()
 ```
