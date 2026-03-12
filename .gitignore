@@ -212,3 +212,4 @@ __marimo__/
 dataset/checkpoint_data*
 dataset/test_dataset*
 dataset/train_dataset*
+dataset/output.tar.gz
