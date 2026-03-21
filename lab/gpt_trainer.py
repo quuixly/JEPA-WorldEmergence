@@ -172,7 +172,7 @@ class GPTTrainer:
 
                     x = torch.tensor(context_tokens, dtype=torch.long)[None, ...].to(self.device)
 
-                    y = sample(self.model.module, x, steps=1, temperature=1.0)[0]
+                    y = sample(self.model.module, x, steps=1, temperature=0.0)[0]
                     predicted_token = int(y[-1])
 
                     predicted_move = convert_token_to_position(predicted_token)
