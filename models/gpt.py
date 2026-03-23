@@ -32,7 +32,8 @@ class MaskedMultiHeadAttention(nn.Module):
 
         attn_mask = None
         if padding_mask is not None:
-            attn_mask = padding_mask.unsqueeze(1).unsqueeze(2)
+            causal_mask = torch.tril(torch.ones((seq_len, seq_len), device=x.device, dtype=torch.bool))
+            attn_mask = padding_mask.unsqueeze(1).unsqueeze(2) & causal_mask.unsqueeze(0).unsqueeze(0)
 
         attn_output = F.scaled_dot_product_attention(
             query=q,
@@ -40,7 +41,7 @@ class MaskedMultiHeadAttention(nn.Module):
             value=v,
             attn_mask=attn_mask,
             dropout_p=self.dropout_rate if self.training else 0.0,
-            is_causal=True
+            is_causal=False
         )
 
         attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, seq_len, self.d_model)
@@ -71,6 +72,7 @@ class DecoderLayer(nn.Module):
 class GPT(nn.Module):
     def __init__(self, n_layers = 4, n_heads = 8, d_model = 512, vocabulary_size = 61, context_window=60, dropout_rate=0.1, padding_token=0):
         super().__init__()
+        self.n_layers = n_layers
         self.padding_token = padding_token
         self.embedding = nn.Embedding(vocabulary_size, d_model)
         self.positional_encoding = nn.Parameter(torch.zeros(context_window, d_model))
@@ -103,6 +105,27 @@ class GPT(nn.Module):
         y = self.head(x)
 
         return y
+
+    def get_hidden_state(self, x, layer_num = 1):
+        """
+
+        :param x:
+        :param layer_num: From 1 to n_layers
+        :return:
+        """
+        if layer_num < 1 or layer_num > self.n_layers:
+            raise ValueError(f"Layer num {layer_num} is out of range")
+
+        batch_size, sequence_length = x.shape
+        padding_mask = (x != self.padding_token)
+
+        x = self.embedding(x)
+        x = x + self.positional_encoding[:sequence_length, :]
+        for idx, layer in enumerate(self.decoder_stack):
+            x = layer(x, padding_mask)
+            if idx == layer_num - 1:
+                return x
+
 
     def get_optimizer(self, weight_decay=0.005, lr=3e-4, betas=(0.9, 0.95)):
         decay = set()
