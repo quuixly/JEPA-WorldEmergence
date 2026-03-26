@@ -72,6 +72,7 @@ class DecoderLayer(nn.Module):
 class GPT(nn.Module):
     def __init__(self, n_layers = 4, n_heads = 8, d_model = 512, vocabulary_size = 61, context_window=60, dropout_rate=0.1, padding_token=0):
         super().__init__()
+        self.d_model = d_model
         self.n_layers = n_layers
         self.padding_token = padding_token
         self.embedding = nn.Embedding(vocabulary_size, d_model)
