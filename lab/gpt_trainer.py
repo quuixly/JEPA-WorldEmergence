@@ -218,6 +218,10 @@ class GPTTrainer:
         if self.local_rank == 0:
             torch.save(self.model.module.state_dict(), f"checkpoints/gpt_{postfix}.pt")
 
+    def save_baseline(self):
+        if self.local_rank == 0:
+            torch.save(self.model.module.state_dict(), f"checkpoints/gpt_baseline.pt")
+
     def __cleanup(self):
         dist.destroy_process_group()
 
