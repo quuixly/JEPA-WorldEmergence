@@ -111,10 +111,10 @@ class GPT(nn.Module):
         """
 
         :param x:
-        :param layer_num: From 1 to n_layers
+        :param layer_num: From 0 to n_layers
         :return:
         """
-        if layer_num < 1 or layer_num > self.n_layers:
+        if layer_num < 0 or layer_num > self.n_layers:
             raise ValueError(f"Layer num {layer_num} is out of range")
 
         batch_size, sequence_length = x.shape
@@ -122,11 +122,35 @@ class GPT(nn.Module):
 
         x = self.embedding(x)
         x = x + self.positional_encoding[:sequence_length, :]
+        if layer_num == 0:
+            return x
         for idx, layer in enumerate(self.decoder_stack):
             x = layer(x, padding_mask)
             if idx == layer_num - 1:
                 return x
 
+    def forward_with_intervention(self, x, intervention_vectors):
+        batch_size, sequence_length = x.shape
+        padding_mask = (x != self.padding_token)
+
+        x = self.embedding(x)
+        x = x + self.positional_encoding[:sequence_length, :]
+
+        if intervention_vectors is not None and len(intervention_vectors) > 0:
+            if intervention_vectors[0] is not None:
+                x[:, -1, :] = x[:, -1, :] + intervention_vectors[0]
+
+        for i, layer in enumerate(self.decoder_stack):
+            x = layer(x, padding_mask)
+
+            if intervention_vectors is not None and (i + 1) < len(intervention_vectors):
+                if intervention_vectors[i + 1] is not None:
+                    x[:, -1, :] = x[:, -1, :] + intervention_vectors[i + 1]
+
+        x = self.head_norm(x)
+        y = self.head(x)
+
+        return y
 
     def get_optimizer(self, weight_decay=0.005, lr=3e-4, betas=(0.9, 0.95)):
         decay = set()
