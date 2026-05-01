@@ -1,5 +1,5 @@
 # JEPA-WorldEmergence
-This research project investigates the emergence of structured world representations in large-scale Transformer-based models and Joint-Embedding Predictive Architectures (JEPA).
+This research project investigates the emergence of structured world representations in large-scale Transformer-based models and Joint-Embedding Predictive Architectures (JEPA 2).
 
 # Installation (on runpod.io)
 ```bash
